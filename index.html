@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Moderno com Menu Lateral</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased h-screen overflow-hidden">
+
+    <div class="flex h-full w-full relative">
+
+        <!-- Mobile menu toggle button -->
+        <button id="menu-toggle" class="md:hidden absolute top-4 left-4 z-50 bg-indigo-600 text-white p-3 rounded-xl shadow-lg focus:outline-none">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-72 bg-slate-950 border-r border-slate-800/80 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl">
+            
+            <!-- Top Section: Profile Picture within a circle and user info -->
+            <div class="p-6 flex flex-col items-center border-b border-slate-800/80">
+                <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-500/80 shadow-lg mb-4 group relative">
+                    <img src="https://placehold.co/200x200/4f46e5/ffffff?text=Perfil" alt="Foto de Perfil" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/200x200/4f46e5/ffffff?text=User'">
+                </div>
+                <h2 class="text-white font-semibold text-lg tracking-wide">Mariana Costa</h2>
+                <p class="text-xs text-indigo-400 font-medium mt-0.5">Desenvolvedora Sênior</p>
+            </div>
+
+            <!-- Navigation Links list -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <button onclick="switchTab('dashboard')" data-tab="dashboard" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <span>Visão Geral</span>
+                </button>
+                <button onclick="switchTab('estatisticas')" data-tab="estatisticas" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                    <span>Estatísticas</span>
+                </button>
+                <button onclick="switchTab('recursos')" data-tab="recursos" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
+                    <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                    <span>Recursos</span>
+                </button>
+                <button onclick="switchTab('mensagens')" data-tab="mensagens" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
+                    <i class="fa-solid fa-envelope w-5 text-center"></i>
+                    <span>Mensagens</span>
+                    <span class="ml-auto bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full font-semibold">5</span>
+                </button>
+                <button onclick="switchTab('configuracoes')" data-tab="configuracoes" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
+                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                    <span>Configurações</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-slate-800/80">
+                <button onclick="showNotification('Sessão encerrada com segurança.')" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+                    <span>Sair do Sistema</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile view -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/80 z-30 hidden md:hidden"></div>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-900">
+            
+            <!-- Top Header bar -->
+            <header class="h-20 bg-slate-950 border-b border-slate-800/80 flex items-center justify-between px-6 md:px-10 shrink-0">
+                <div class="pl-12 md:pl-0">
+                    <h1 id="page-title" class="text-xl md:text-2xl font-bold text-white tracking-tight">Visão Geral</h1>
+                    <p class="text-xs md:text-sm text-slate-400">Acompanhe suas principais métricas e atividades.</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-sm shadow-sm border border-indigo-500/30">
+                        MC
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Scrollable Viewport with transition effect -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+                <div class="max-w-4xl mx-auto">
+                    
+                    <!-- TAB 1: DASHBOARD -->
+                    <div id="content-dashboard" class="tab-content transition-all duration-300 opacity-100 transform translate-y-0 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-house text-indigo-400"></i>
+                                <span>Bem-vinda ao Painel Principal</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm">
+                                Este é o seu espaço central de controle. Através deste painel, você tem acesso rápido a todas as ferramentas essenciais para gerenciar suas tarefas diárias com máxima eficiência e fluidez. Utilize o menu lateral esquerdo para alternar entre as abas e visualizar conteúdos dinâmicos instantaneamente.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl">
+                                <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Progresso Atual</h4>
+                                <p class="text-2xl font-bold text-white">84% Concluído</p>
+                                <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
+                                    <div class="bg-indigo-500 h-full w-[84%] rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl">
+                                <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Tarefas Pendentes</h4>
+                                <p class="text-2xl font-bold text-white">3 Tarefas</p>
+                                <p class="text-xs text-indigo-400 mt-3 font-medium">Prazo limite para hoje às 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: ESTATISTICAS -->
+                    <div id="content-estatisticas" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-line text-indigo-400"></i>
+                                <span>Relatório de Estatísticas</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm">
+                                Aqui estão detalhadas as métricas de desempenho mensal. Seus registros apontam um crescimento constante de acessos e interações bem-sucedidas com os serviços integrados.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: RECURSOS -->
+                    <div id="content-recursos" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-layer-group text-indigo-400"></i>
+                                <span>Biblioteca de Recursos</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm">
+                                Acesse materiais de apoio, documentações técnicas, guias de desenvolvimento e modelos prontos para otimizar seus projetos corporativos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: MENSAGENS -->
+                    <div id="content-mensagens" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-envelope text-indigo-400"></i>
+                                <span>Caixa de Mensagens</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm">
+                                Você possui 5 novas mensagens não lidas de colegas de equipe referentes às atualizações do servidor de produção.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: CONFIGURACOES -->
+                    <div id="content-configuracoes" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-gear text-indigo-400"></i>
+                                <span>Configurações do Perfil</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-sm">
+                                Modifique suas credenciais de acesso, preferências de notificação e tema visual do painel conforme sua preferência pessoal.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center space-x-3 text-sm">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message">Ação realizada!</span>
+    </div>
+
+    <script>
+        const tabTitles = {
+            'dashboard': 'Visão Geral',
+            'estatisticas': 'Estatísticas',
+            'recursos': 'Recursos',
+            'mensagens': 'Mensagens',
+            'configuracoes': 'Configurações'
+        };
+
+        function switchTab(tabId) {
+            // Hide all tab contents with smooth transition classes
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden', 'opacity-0', 'translate-y-2');
+                el.classList.remove('opacity-100', 'translate-y-0');
+            });
+
+            // Show selected tab content with fade-in animation
+            const targetContent = document.getElementById('content-' + tabId);
+            if (targetContent) {
+                targetContent.classList.remove('hidden');
+                setTimeout(() => {
+                    targetContent.classList.remove('opacity-0', 'translate-y-2');
+                    targetContent.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+            }
+
+            // Update top header title
+            document.getElementById('page-title').textContent = tabTitles[tabId] || 'Painel';
+
+            // Update navigation button active state styles
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+                btn.classList.add('text-slate-400', 'hover:bg-slate-900', 'hover:text-white');
+            });
+
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-900', 'hover:text-white');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+            }
+
+            // Close mobile menu automatically when selected
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function showNotification(msg) {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toast-message');
+            messageEl.textContent = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // Mobile Menu Toggle Event Listeners
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
+```
+eof
+
+I have successfully created a modern, responsive HTML page featuring a fixed vertical sidebar on the left with a circular profile picture, user name, and interactive navigation buttons. Clicking any menu item dynamically updates the main content on the right with a smooth fade and slide transition.
