@@ -1,45 +1,176 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Moderno com Menu Lateral</title>
+    <title>Sistema de Perfil & Currículo - Paulo Laerte</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para visualização das estatísticas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                     },
+                    colors: {
+                        slate: {
+                            950: '#030712',
+                        }
+                    }
                 }
             }
         }
     </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans antialiased h-screen overflow-hidden">
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen overflow-x-hidden selection:bg-indigo-500 selection:text-white">
 
-    <div class="flex h-full w-full relative">
+    <!-- ================================================================= -->
+    <!-- VIEW 1: TELA DE LOGIN                                             -->
+    <!-- ================================================================= -->
+    <section id="login-screen" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-950">
+        <!-- Elementos decorativos de fundo (Glow Effects) -->
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Mobile menu toggle button -->
-        <button id="menu-toggle" class="md:hidden absolute top-4 left-4 z-50 bg-indigo-600 text-white p-3 rounded-xl shadow-lg focus:outline-none">
+        <div class="w-full max-w-md relative z-10">
+            <!-- Header do Card de Login -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 mb-4 shadow-lg shadow-indigo-500/10">
+                    <i class="fa-solid fa-user-shield text-2xl"></i>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Portal do Desenvolvedor</h1>
+                <p class="text-slate-400 text-sm mt-2">Acesse para visualizar o currículo e painel privado</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="bg-slate-900/80 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl relative">
+
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+                    
+                    <!-- Campo de E-mail/Usuário -->
+                    <div>
+                        <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">E-mail ou Usuário</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <input type="email" id="email" required placeholder="seu@email.com" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Campo de Senha -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Senha</label>
+                            <a href="#" onclick="showNotification('Em ambiente de testes, utilize as credenciais demonstrativas sugeridas.'); return false;" class="text-xs text-indigo-400 hover:underline">Esqueceu?</a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input type="password" id="password" required placeholder="••••••••" 
+                                class="w-full pl-10 pr-10 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300">
+                                <i id="password-toggle-icon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lembrar de mim e Opções -->
+                    <div class="flex items-center justify-between text-sm">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900">
+                            <span class="text-slate-400 text-xs">Lembrar-me por 30 dias</span>
+                        </label>
+                    </div>
+
+                    <!-- Botão de Submit -->
+                    <button type="submit" id="login-btn" class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center justify-center space-x-2 active:scale-[0.99]">
+                        <span id="btn-text">Entrar no Painel</span>
+                        <i id="btn-spinner" class="fa-solid fa-spinner fa-spin hidden text-lg"></i>
+                    </button>
+                </form>
+
+                <!-- Footer do Card -->
+                <div class="mt-6 pt-6 border-t border-slate-800/80 text-center">
+                    <p class="text-xs text-slate-500">
+                        Desenvolvido por <strong class="text-slate-300">Paulo Laerte</strong> &bull; Portfólio Interativo
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 2: PAINEL / DASHBOARD (CURRÍCULO E SISTEMA)                -->
+    <!-- ================================================================= -->
+    <div id="dashboard-screen" class="hidden h-screen w-full flex relative overflow-hidden bg-slate-900">
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-50 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-xl shadow-lg focus:outline-none transition-all">
             <i class="fa-solid fa-bars text-lg"></i>
         </button>
 
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-72 bg-slate-950 border-r border-slate-800/80 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-72 bg-slate-950 border-r border-slate-800/80 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl shrink-0">
             
-            <!-- Top Section: Profile Picture within a circle and user info -->
-            <div class="p-6 flex flex-col items-center border-b border-slate-800/80">
-                <div class="profile-pic" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <img src="fotodeperfil.jpg" alt="Minha Foto" style="width: 100%; height: 100%; object-fit: cover;">
+            <!-- Top Profile Section -->
+            <div class="p-6 flex flex-col items-center border-b border-slate-800/80 text-center relative">
+                <div class="relative w-24 h-24 mb-3">
+                    <!-- Foto de Perfil Circular com Borda Estilizada -->
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-indigo-500/50 shadow-inner flex items-center justify-center bg-slate-800">
+                        <img src="https://placehold.co/200x200/1e293b/818cf8?text=PL" 
+                             alt="Paulo Laerte" 
+                             onerror="this.src='https://placehold.co/200x200/1e293b/818cf8?text=Paulo'"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <!-- Status On-line Indicator -->
+                    <span class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-950 rounded-full" title="Disponível para Projetos"></span>
                 </div>
                 <h2 class="text-white font-semibold text-lg tracking-wide">Paulo Laerte</h2>
-                <p class="text-xs text-indigo-400 font-medium mt-0.5">Desenvolvedor</p>
+                <p class="text-xs text-indigo-400 font-medium mt-0.5 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-code text-[10px]"></i> Desenvolvedor Full Stack
+                </p>
+                <div class="mt-3 flex items-center gap-2">
+                    <a href="https://github.com" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 flex items-center justify-center transition-colors text-xs" title="GitHub">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                    <a href="https://linkedin.com" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 flex items-center justify-center transition-colors text-xs" title="LinkedIn">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+                    <a href="mailto:paulo@dev.com" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 flex items-center justify-center transition-colors text-xs" title="E-mail">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </div>
             </div>
 
-            <!-- Navigation Links list -->
+            <!-- Navigation Links -->
             <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                 <button onclick="switchTab('dashboard')" data-tab="dashboard" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
                     <i class="fa-solid fa-chart-pie w-5 text-center"></i>
@@ -51,12 +182,7 @@
                 </button>
                 <button onclick="switchTab('recursos')" data-tab="recursos" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
                     <i class="fa-solid fa-layer-group w-5 text-center"></i>
-                    <span>Recursos</span>
-                </button>
-                <button onclick="switchTab('mensagens')" data-tab="mensagens" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
-                    <i class="fa-solid fa-envelope w-5 text-center"></i>
-                    <span>Mensagens</span>
-                    <span class="ml-auto bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full font-semibold">5</span>
+                    <span>Recursos & Proj.</span>
                 </button>
                 <button onclick="switchTab('configuracoes')" data-tab="configuracoes" class="menu-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:bg-slate-900 hover:text-white">
                     <i class="fa-solid fa-gear w-5 text-center"></i>
@@ -64,113 +190,311 @@
                 </button>
             </nav>
 
-            <!-- Sidebar Footer -->
+            <!-- Sidebar Footer / Sair -->
             <div class="p-4 border-t border-slate-800/80">
-                <button onclick="showNotification('Sessão encerrada com segurança.')" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
+                <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors">
                     <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
                     <span>Sair do Sistema</span>
                 </button>
             </div>
         </aside>
 
-        <!-- Overlay for mobile view -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/80 z-30 hidden md:hidden"></div>
+        <!-- Overlay para mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/80 z-30 hidden md:hidden backdrop-blur-sm"></div>
 
+        <!-- Main Content View -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-900">
             
-            <!-- Top Header bar -->
+            <!-- Top Header Bar -->
             <header class="h-20 bg-slate-950 border-b border-slate-800/80 flex items-center justify-between px-6 md:px-10 shrink-0">
                 <div class="pl-12 md:pl-0">
                     <h1 id="page-title" class="text-xl md:text-2xl font-bold text-white tracking-tight">Visão Geral</h1>
                     <p class="text-xs md:text-sm text-slate-400">Acompanhe suas principais métricas e atividades.</p>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button onclick="showNotification('Sincronizando dados com o servidor...')" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-all">
+                        <i class="fa-solid fa-rotate text-indigo-400"></i>
+                        <span>Sincronizar</span>
+                    </button>
                     <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-sm shadow-sm border border-indigo-500/30">
-                        MC
+                        PL
                     </div>
                 </div>
             </header>
 
-            <!-- Dynamic Content Scrollable Viewport with transition effect -->
+            <!-- Viewport de Conteúdo Dinâmico -->
             <div class="flex-1 overflow-y-auto p-6 md:p-10">
-                <div class="max-w-4xl mx-auto">
+                <div class="max-w-5xl mx-auto space-y-6">
                     
-                    <!-- TAB 1: DASHBOARD -->
+                    <!-- =================================================== -->
+                    <!-- TAB 1: VISÃO GERAL (CURRÍCULO & STATUS)             -->
+                    <!-- =================================================== -->
                     <div id="content-dashboard" class="tab-content transition-all duration-300 opacity-100 transform translate-y-0 space-y-6">
-                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
-                                <i class="fa-solid fa-house text-indigo-400"></i>
-                                <span>Bem-vinda ao Painel Principal</span>
-                            </h3>
-                            <p class="text-slate-300 leading-relaxed text-sm">
-                                Este é o seu espaço central de controle. Através deste painel, você tem acesso rápido a todas as ferramentas essenciais para gerenciar suas tarefas diárias com máxima eficiência e fluidez. Utilize o menu lateral esquerdo para alternar entre as abas e visualizar conteúdos dinâmicos instantaneamente.
-                            </p>
+                        
+                        <!-- Banner Boas-vindas -->
+                        <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950/40 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl relative overflow-hidden">
+                            <div class="relative z-10">
+                                <span class="text-indigo-400 text-xs font-semibold tracking-wider uppercase bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full inline-block mb-3">
+                                    Perfil Profissional
+                                </span>
+                                <h3 class="text-xl md:text-2xl font-bold text-white mb-2 flex items-center space-x-2">
+                                    <span>Bem-vindo(a) ao Currículo Dinâmico de Paulo Laerte</span>
+                                </h3>
+                                <p class="text-slate-300 leading-relaxed text-sm max-w-3xl">
+                                    Desenvolvedor de Software focado em soluções web modernas, arquiteturas escaláveis e experiências de usuário de alto nível. Experiência em ecossistemas JavaScript/TypeScript, React, Node.js e Tailwind CSS.
+                                </p>
+                            </div>
                         </div>
+
+                        <!-- Grid de Estatísticas Rápidas -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-400 uppercase">Projetos Entregues</p>
+                                        <p class="text-2xl font-bold text-white mt-1">28+</p>
+                                    </div>
+                                    <span class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                        <i class="fa-solid fa-code-commit"></i>
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-emerald-400 mt-3 flex items-center gap-1 font-medium">
+                                    <i class="fa-solid fa-arrow-up"></i> 100% no prazo
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-400 uppercase">Experiência</p>
+                                        <p class="text-2xl font-bold text-white mt-1">5 Anos</p>
+                                    </div>
+                                    <span class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                        <i class="fa-solid fa-briefcase"></i>
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-3 font-medium">Full Stack & Frontend</p>
+                            </div>
+
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-400 uppercase">Satisfação</p>
+                                        <p class="text-2xl font-bold text-white mt-1">99.8%</p>
+                                    </div>
+                                    <span class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        <i class="fa-solid fa-star"></i>
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-emerald-400 mt-3 font-medium">Avaliação dos Clientes</p>
+                            </div>
+
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xs font-semibold text-slate-400 uppercase">Disponibilidade</p>
+                                        <p class="text-xl font-bold text-emerald-400 mt-1">Imediata</p>
+                                    </div>
+                                    <span class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-3 font-medium">Contratos ou Full-Time</p>
+                            </div>
+                        </div>
+
+                        <!-- Principais Competências & Habilidades -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl">
-                                <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Progresso Atual</h4>
-                                <p class="text-2xl font-bold text-white">84% Concluído</p>
-                                <div class="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                                    <div class="bg-indigo-500 h-full w-[84%] rounded-full"></div>
+                                <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center justify-between">
+                                    <span>Habilidades Técnicas</span>
+                                    <i class="fa-solid fa-laptop-code text-indigo-400"></i>
+                                </h4>
+                                <div class="space-y-4 text-xs font-medium">
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-slate-200">JavaScript / TypeScript</span>
+                                            <span class="text-indigo-400">92%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-500 h-full w-[92%] rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-slate-200">React.js / Next.js / Tailwind</span>
+                                            <span class="text-indigo-400">90%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-500 h-full w-[90%] rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-slate-200">Node.js / Express / APIs REST</span>
+                                            <span class="text-indigo-400">85%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-500 h-full w-[85%] rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-slate-200">Bancos de Dados (SQL/NoSQL)</span>
+                                            <span class="text-indigo-400">80%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                            <div class="bg-indigo-500 h-full w-[80%] rounded-full"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl">
-                                <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Tarefas Pendentes</h4>
-                                <p class="text-2xl font-bold text-white">3 Tarefas</p>
-                                <p class="text-xs text-indigo-400 mt-3 font-medium">Prazo limite para hoje às 18:00</p>
+
+                            <div class="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center justify-between">
+                                        <span>Resumo Profissional</span>
+                                        <i class="fa-solid fa-graduation-cap text-indigo-400"></i>
+                                    </h4>
+                                    <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                                        Formado em Ciência da Computação, atua desenvolvendo produtos digitais com arquiteturas limpas, foco em performance e UI/UX responsiva.
+                                    </p>
+                                    <div class="space-y-2">
+                                        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-briefcase text-indigo-400"></i>
+                                                <div>
+                                                    <p class="font-semibold text-white">Desenvolvedor</p>
+                                                    <p class="text-slate-500 text-[11px]">Tech Solutions • 2022 - Atual</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-briefcase text-indigo-400"></i>
+                                                <div>
+                                                    <p class="font-semibold text-white">Desenvolvedor</p>
+                                                    <p class="text-slate-500 text-[11px]">DevStudio • 2020 - 2022</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-slate-800/80">
+                                    <button onclick="showNotification('Download do Currículo em PDF iniciado!')" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 rounded-xl transition-colors flex items-center justify-center space-x-2">
+                                        <i class="fa-solid fa-file-arrow-down text-indigo-400"></i>
+                                        <span>Baixar Currículo em PDF</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 2: ESTATISTICAS -->
+                    <!-- =================================================== -->
+                    <!-- TAB 2: ESTATÍSTICAS                                -->
+                    <!-- =================================================== -->
                     <div id="content-estatisticas" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
                         <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                            <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
                                 <i class="fa-solid fa-chart-line text-indigo-400"></i>
-                                <span>Relatório de Estatísticas</span>
+                                <span>Relatório de Produtividade & Commits</span>
                             </h3>
-                            <p class="text-slate-300 leading-relaxed text-sm">
-                                Aqui estão detalhadas as métricas de desempenho mensal. Seus registros apontam um crescimento constante de acessos e interações bem-sucedidas com os serviços integrados.
-                            </p>
+                            <p class="text-slate-400 text-xs mb-6">Acompanhamento de entregas de código e resolução de demandas mensais.</p>
+                            
+                            <!-- Gráfico simulado em Canvas -->
+                            <div class="relative h-64 w-full">
+                                <canvas id="statsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl text-center">
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Commits este mês</p>
+                                <p class="text-3xl font-bold text-white mt-2">142</p>
+                                <p class="text-xs text-emerald-400 mt-1"><i class="fa-solid fa-arrow-trend-up"></i> +12% em relação ao mês anterior</p>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl text-center">
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Pull Requests Aprovados</p>
+                                <p class="text-3xl font-bold text-white mt-2">38</p>
+                                <p class="text-xs text-indigo-400 mt-1">100% com Code Review</p>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl text-center">
+                                <p class="text-xs font-semibold text-slate-400 uppercase">Code Coverage</p>
+                                <p class="text-3xl font-bold text-white mt-2">89%</p>
+                                <p class="text-xs text-emerald-400 mt-1">Testes Automatizados</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TAB 3: RECURSOS -->
+                    <!-- =================================================== -->
+                    <!-- TAB 3: RECURSOS E PROJETOS                         -->
+                    <!-- =================================================== -->
                     <div id="content-recursos" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
                         <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                            <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
                                 <i class="fa-solid fa-layer-group text-indigo-400"></i>
-                                <span>Biblioteca de Recursos</span>
+                                <span>Projetos em Destaque & Repositórios</span>
                             </h3>
-                            <p class="text-slate-300 leading-relaxed text-sm">
-                                Acesse materiais de apoio, documentações técnicas, guias de desenvolvimento e modelos prontos para otimizar seus projetos corporativos.
-                            </p>
+                            <p class="text-slate-400 text-xs mb-6">Confira alguns dos principais projetos desenvolvidos e mantidos por Paulo Laerte.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Card Projeto 1 -->
+                                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl hover:border-indigo-500/40 transition-all group">
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="font-semibold text-white group-hover:text-indigo-400 transition-colors">SaaS ERP Dashboard</h4>
+                                        <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">React / Tailwind</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-2">Plataforma corporativa de gestão de vendas e relatórios em tempo real com suporte a gráficos e exportação.</p>
+                                    <div class="mt-4 flex items-center space-x-3 text-xs text-slate-500">
+                                        <span><i class="fa-regular fa-star text-amber-400"></i> 45</span>
+                                        <span><i class="fa-solid fa-code-fork"></i> 12</span>
+                                    </div>
+                                </div>
+
+                                <!-- Card Projeto 2 -->
+                                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl hover:border-indigo-500/40 transition-all group">
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="font-semibold text-white group-hover:text-indigo-400 transition-colors">API REST Gateway</h4>
+                                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">Node.js / Express</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-2">Microserviço escalável para autenticação de usuários, limitação de taxa e integração com gateways de pagamento.</p>
+                                    <div class="mt-4 flex items-center space-x-3 text-xs text-slate-500">
+                                        <span><i class="fa-regular fa-star text-amber-400"></i> 82</span>
+                                        <span><i class="fa-solid fa-code-fork"></i> 29</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TAB 4: MENSAGENS -->
-                    <div id="content-mensagens" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
-                        <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
-                                <i class="fa-solid fa-envelope text-indigo-400"></i>
-                                <span>Caixa de Mensagens</span>
-                            </h3>
-                            <p class="text-slate-300 leading-relaxed text-sm">
-                                Você possui 5 novas mensagens não lidas de colegas de equipe referentes às atualizações do servidor de produção.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- TAB 5: CONFIGURACOES -->
+                    <!-- =================================================== -->
+                    <!-- TAB 5: CONFIGURAÇÕES                               -->
+                    <!-- =================================================== -->
                     <div id="content-configuracoes" class="tab-content hidden transition-all duration-300 opacity-0 transform translate-y-2 space-y-6">
                         <div class="bg-slate-950 border border-slate-800/80 p-6 md:p-8 rounded-2xl shadow-xl">
-                            <h3 class="text-lg font-bold text-white mb-3 flex items-center space-x-2">
+                            <h3 class="text-lg font-bold text-white mb-2 flex items-center space-x-2">
                                 <i class="fa-solid fa-gear text-indigo-400"></i>
-                                <span>Configurações do Perfil</span>
+                                <span>Configurações da Conta & Preferências</span>
                             </h3>
-                            <p class="text-slate-300 leading-relaxed text-sm">
-                                Modifique suas credenciais de acesso, preferências de notificação e tema visual do painel conforme sua preferência pessoal.
-                            </p>
+                            <p class="text-slate-400 text-xs mb-6">Personalize as informações de perfil e opções de privacidade.</p>
+
+                            <form onsubmit="event.preventDefault(); showNotification('Configurações salvas com sucesso!');" class="space-y-4 max-w-xl">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Nome Completo</label>
+                                    <input type="text" value="Paulo Laerte" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">Cargo Principal</label>
+                                    <input type="text" value="Desenvolvedor Full Stack" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-2">E-mail Profissional</label>
+                                    <input type="email" value="paulo@dev.com" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl shadow-lg transition-all">
+                                    Salvar Alterações
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -179,29 +503,128 @@
         </main>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center space-x-3 text-sm">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center space-x-3 text-sm">
         <i class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="toast-message">Ação realizada!</span>
     </div>
 
+    <!-- ================================================================= -->
+    <!-- LOGICA JAVASCRIPT EM SCRIPT ÚNICO                                 -->
+    <!-- ================================================================= -->
     <script>
+        // Mapeamento dos títulos das abas
         const tabTitles = {
             'dashboard': 'Visão Geral',
             'estatisticas': 'Estatísticas',
-            'recursos': 'Recursos',
+            'recursos': 'Recursos & Projetos',
             'mensagens': 'Mensagens',
             'configuracoes': 'Configurações'
         };
 
+        let statsChartInstance = null;
+
+        // Auto-execução ao carregar a página: verifica se há sessão ativa
+        window.onload = function () {
+            const isAuthenticated = localStorage.getItem('isLoggedIn');
+            if (isAuthenticated === 'true') {
+                showDashboardScreen();
+            } else {
+                showLoginScreen();
+            }
+        };
+
+        // Função para preencher credenciais de teste
+        function fillDemoCredentials() {
+            document.getElementById('email').value = 'paulo@dev.com';
+            document.getElementById('password').value = '123456';
+            showNotification('Credenciais preenchidas!');
+        }
+
+        // Mostrar / Ocultar Senha
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Lógica de Autenticação / Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const loginBtn = document.getElementById('login-btn');
+
+            // Feedback Visual de Carregamento
+            btnText.textContent = 'Autenticando...';
+            btnSpinner.classList.remove('hidden');
+            loginBtn.disabled = true;
+
+            setTimeout(() => {
+                // Validação Simples (aceita as credenciais informadas ou qualquer login preenchido)
+                if (email && password.length >= 4) {
+                    if (rememberMe) {
+                        localStorage.setItem('isLoggedIn', 'true');
+                    } else {
+                        sessionStorage.setItem('isLoggedIn', 'true');
+                    }
+                    
+                    showNotification('Login efetuado com sucesso!');
+                    showDashboardScreen();
+                } else {
+                    showNotification('Por favor, informe e-mail e senha válidos.');
+                }
+
+                // Reset do Botão
+                btnText.textContent = 'Entrar no Painel';
+                btnSpinner.classList.add('hidden');
+                loginBtn.disabled = false;
+            }, 800);
+        }
+
+        // Encerrar Sessão / Logout
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('isLoggedIn');
+            showNotification('Sessão encerrada com segurança.');
+            showLoginScreen();
+        }
+
+        // Exibir Tela de Login
+        function showLoginScreen() {
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        // Exibir Tela do Dashboard
+        function showDashboardScreen() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            // Garante exibição da aba inicial
+            switchTab('dashboard');
+        }
+
+        // Navegação entre Abas no Painel
         function switchTab(tabId) {
-            // Hide all tab contents with smooth transition classes
+            // Oculta todas as abas
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden', 'opacity-0', 'translate-y-2');
                 el.classList.remove('opacity-100', 'translate-y-0');
             });
 
-            // Show selected tab content with fade-in animation
+            // Exibe a aba selecionada com transição
             const targetContent = document.getElementById('content-' + tabId);
             if (targetContent) {
                 targetContent.classList.remove('hidden');
@@ -211,10 +634,10 @@
                 }, 10);
             }
 
-            // Update top header title
+            // Atualiza título do Header
             document.getElementById('page-title').textContent = tabTitles[tabId] || 'Painel';
 
-            // Update navigation button active state styles
+            // Atualiza estilo dos botões da sidebar
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
                 btn.classList.add('text-slate-400', 'hover:bg-slate-900', 'hover:text-white');
@@ -226,7 +649,12 @@
                 activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
             }
 
-            // Close mobile menu automatically when selected
+            // Se for a aba de Estatísticas, inicializa o gráfico
+            if (tabId === 'estatisticas') {
+                setTimeout(initStatsChart, 100);
+            }
+
+            // Fecha o menu mobile se aberto
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             if (window.innerWidth < 768) {
@@ -235,6 +663,7 @@
             }
         }
 
+        // Função de Notificação Toast
         function showNotification(msg) {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
@@ -245,24 +674,67 @@
             }, 3000);
         }
 
-        // Mobile Menu Toggle Event Listeners
+        // Renderização do Gráfico com Chart.js na aba de estatísticas
+        function initStatsChart() {
+            const ctx = document.getElementById('statsChart');
+            if (!ctx) return;
+
+            if (statsChartInstance) {
+                statsChartInstance.destroy();
+            }
+
+            statsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out'],
+                    datasets: [{
+                        label: 'Commits Realizados',
+                        data: [65, 78, 90, 81, 110, 125, 105, 130, 120, 142],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#818cf8',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Listeners para menu mobile
         const menuToggle = document.getElementById('menu-toggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
+        if (menuToggle && sidebar && overlay) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
 
-        overlay.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        }
     </script>
 </body>
 </html>
-```
-eof
-
-I have successfully created a modern, responsive HTML page featuring a fixed vertical sidebar on the left with a circular profile picture, user name, and interactive navigation buttons. Clicking any menu item dynamically updates the main content on the right with a smooth fade and slide transition.
